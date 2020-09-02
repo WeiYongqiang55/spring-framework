@@ -1,7 +1,6 @@
 package com.luban.aop;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * @program: spring
@@ -9,7 +8,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @author: Mr.Wei Yongqiang
  * @createTime: 2020-09-01 15:45
  */
-@EnableAspectJAutoProxy
 public class TestAop {
 
 	public static void main(String[] args) {
@@ -20,6 +18,6 @@ public class TestAop {
 		Calculate calculate  = (Calculate) ac.getBean(Calculate.class);
 		System.out.println("calculate对象是一个  "+calculate.getClass().getName());
 		calculate.calculate();
-		calculate.say();
+
 	}
 }

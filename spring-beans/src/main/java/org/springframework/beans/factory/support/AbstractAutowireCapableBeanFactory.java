@@ -383,7 +383,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object result = existingBean;
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
-			/**获取所有的bean 后置处理器  执行程序员自定义的bean后置处理器
+			/**获取所有的bean 后置处理器  执行程序员自定义的bean后置处理器，注意这里可能会替换掉传入进来的bean，比如AOP就会用动态代理对象替换掉
 			 * AOP 执行的是哪一个的呢
 			 * 是 AnnotationAwareAspectJAutoProxyCreator 的父类
 			 * AbstractAutoProxyCreator这个类的的 postProcessAfterInitialization方法*/
@@ -556,7 +556,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
-//			注入属性就是在这个populateBean 函数中做的
+/**			下面这俩函数都非常重要，注入属性就是在这个populateBean 函数中做的，initializeBean()做了bean的初始化，bean后置处理器执行就是在这个函数里面*/
 			populateBean(beanName, mbd, instanceWrapper);
 			exposedObject = initializeBean(beanName, exposedObject, mbd);//执行bean 后置处理器在这个函数里面
 		}
@@ -1770,6 +1770,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
+/**			扩展点 扩展点 这里会执行程序员自定义的beanPostProcessor 执行时机是在bean刚执行完初始化之后
+ *          AOP 利用了这个扩展点 去生成了bena的动态代理对象，返回回来就是生成了的动态代理对象*/
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 

@@ -123,9 +123,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	protected void addSingleton(String beanName, Object singletonObject) {
 		synchronized (this.singletonObjects) {
-			this.singletonObjects.put(beanName, singletonObject);
-			this.singletonFactories.remove(beanName);
-			this.earlySingletonObjects.remove(beanName);
+			this.singletonObjects.put(beanName, singletonObject);//1级缓存
+			this.singletonFactories.remove(beanName);//2级缓存
+			this.earlySingletonObjects.remove(beanName);//3级缓存
 			this.registeredSingletons.add(beanName);
 		}
 	}
@@ -246,7 +246,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					afterSingletonCreation(beanName);
 				}
 				if (newSingleton) {
-					addSingleton(beanName, singletonObject);
+					addSingleton(beanName, singletonObject);//加入1级缓存
 				}
 			}
 			return singletonObject;

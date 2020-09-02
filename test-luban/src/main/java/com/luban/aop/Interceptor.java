@@ -50,24 +50,24 @@ public class Interceptor {
 	//前置通知等可以没有JoinPoint参数
 	@Before("aspect()")
 	public void doBefore(JoinPoint joinPoint) {
-		System.out.println("==========执行前置通知===============");
+		System.out.println("==========执行前置通知  dobefore()===============");
 
 	}
 	//配置后置通知,使用在方法aspect()上注册的切入点
 	@After("aspect()")
 	public void doAfter(JoinPoint joinPoint) {
-		System.out.println("===========执行后置通知==============");
+		System.out.println("===========执行后置通知  doAfter()==============");
 
 	}
 	//配置后置返回通知,使用在方法aspect()上注册的切入点
 	@AfterReturning("aspect()")
 	public void afterReturn(JoinPoint joinPoint){
-		System.out.println("===========执行后置返回通知==============");
+		System.out.println("===========执行后置返回通知=  afterReturn()=============");
 
 	}
 	//配置抛出异常后通知,使用在方法aspect()上注册的切入点
 	@AfterThrowing(pointcut="aspect()", throwing="ex")
 	public void afterThrow(JoinPoint joinPoint, Exception ex){
-		System.out.println("==============AOP 执行抛出异常后通知=========");
+		System.out.println("==============AOP 执行抛出异常后通知   afterThrow()=========");
 	}
 }
