@@ -21,7 +21,14 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 
-/**
+/**bean定义为从其父类继承设置。 子bean 的 bd 对父bean定义一个固定的依赖。
+ 子bean定义会继承构造器参数值，属性值和方法覆盖从父类，有增加新的值的选项。
+ 如果init方法，销毁方法和/或静态工厂方法规定，它们将覆盖相应的父设置。
+ 剩余的设置将 总是 从子定义处得到：依赖，自动装配模式，依赖检查，singleton，延迟初始化。
+
+ 注意：由于spring 2.5开始，注册bean定义的首选编程方式是GenericBeanDefinition类，
+ 它允许通过动态地定义父依赖性通过GenericBeanDefinition.setParentName方法。
+ 这有效地取代了大多数使用情况的ChildBeanDefinition类
  * Bean definition for beans which inherit settings from their parent.
  * Child bean definitions have a fixed dependency on a parent bean definition.
  *

@@ -24,6 +24,7 @@ import org.springframework.lang.Nullable;
  *
  * @author Rob Harrop
  * @since 2.0
+ * 主要提供对beanDefinition 元数据matadata 操作的API
  */
 public interface AttributeAccessor {
 

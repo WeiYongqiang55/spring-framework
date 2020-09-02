@@ -16,14 +16,6 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
 import org.springframework.beans.BeanMetadataAttributeAccessor;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -37,6 +29,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Base class for concrete, full-fledged {@link BeanDefinition} classes,
@@ -99,7 +95,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	@Deprecated
 	public static final int AUTOWIRE_AUTODETECT = AutowireCapableBeanFactory.AUTOWIRE_AUTODETECT;
 
-	/**
+	/**一直表示根本没有依赖检查
 	 * Constant that indicates no dependency check at all.
 	 * @see #setDependencyCheck
 	 */
@@ -125,7 +121,10 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 */
 	public static final int DEPENDENCY_CHECK_ALL = 3;
 
-	/**
+	/**常数，指示容器应尝试推断destroy method name为一个Bean，而不是一个方法名的明确规范。
+	 * 值“（推断）”是专门设计为包括字符的方法名称否则非法，确保没有与具有相同名称的合法命名方法冲突的可能性。
+	 目前，销毁方法推理过程中检测方法名是“close()”和“shurdown()”，如果存在于特定的bean类
+	 就是指定默认的bean的销毁方法是close()  或者shutdown() 要在具体的service类中去自己实现的
 	 * Constant that indicates the container should attempt to infer the
 	 * {@link #setDestroyMethodName destroy method name} for a bean as opposed to
 	 * explicit specification of a method name. The value {@value} is specifically
@@ -154,19 +153,19 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	private int dependencyCheck = DEPENDENCY_CHECK_NONE;
 
 	@Nullable
-	private String[] dependsOn;
-
+	private String[] dependsOn;//存储depends on的值
+	//是否作为自动转配候选对象 ，不设置的话，就在自动装配的时候不考虑这个bean 了
 	private boolean autowireCandidate = true;
-
+	//是否作为主要互选bean
 	private boolean primary = false;
 
 	private final Map<String, AutowireCandidateQualifier> qualifiers = new LinkedHashMap<>();
 
 	@Nullable
 	private Supplier<?> instanceSupplier;
-
+	//允许访问非公开方法，构造方法，  反射用
 	private boolean nonPublicAccessAllowed = true;
-
+	//调动g构造方法采用宽松匹配
 	private boolean lenientConstructorResolution = true;
 
 	@Nullable
@@ -175,6 +174,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	@Nullable
 	private String factoryMethodName;
 
+//	这个里面存放的是 构造函数要传递的值
 	@Nullable
 	private ConstructorArgumentValues constructorArgumentValues;
 

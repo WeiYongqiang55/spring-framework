@@ -26,10 +26,13 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @since 2.5
+ *
+ * 主要是对beanDefination元数据的操作api
  */
 @SuppressWarnings("serial")
 public class BeanMetadataAttributeAccessor extends AttributeAccessorSupport implements BeanMetadataElement {
 
+//	一个bean对应的class文件在磁盘上存放的路径
 	@Nullable
 	private Object source;
 

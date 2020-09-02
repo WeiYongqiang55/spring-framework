@@ -37,6 +37,8 @@ class AspectJAutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 	 * Register, escalate, and configure the AspectJ auto proxy creator based on the value
 	 * of the @{@link EnableAspectJAutoProxy#proxyTargetClass()} attribute on the importing
 	 * {@code @Configuration} class.
+	 * 这里就是AOP 生成动态代理对象的函数
+	 * 如果添加了@EnableAspectJAutoProxy  注解的话就会执行这里
 	 */
 	@Override
 	public void registerBeanDefinitions(
@@ -47,6 +49,8 @@ class AspectJAutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 		AnnotationAttributes enableAspectJAutoProxy =
 				AnnotationConfigUtils.attributesFor(importingClassMetadata, EnableAspectJAutoProxy.class);
 		if (enableAspectJAutoProxy != null) {
+//			添加了@EnableAspectJAutoProxy 注解就可以执行下面的代码
+//			proxyTargetClass 为true使用cglib代理 ；   false  使用 jdk代理（默认值）
 			if (enableAspectJAutoProxy.getBoolean("proxyTargetClass")) {
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}

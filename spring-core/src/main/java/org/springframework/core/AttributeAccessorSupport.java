@@ -16,13 +16,13 @@
 
 package org.springframework.core;
 
-import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Support class for {@link AttributeAccessor AttributeAccessors}, providing
@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 @SuppressWarnings("serial")
 public abstract class AttributeAccessorSupport implements AttributeAccessor, Serializable {
 
-	/** Map with String keys and Object values. */
+	/** Map with String keys and Object values. 存放的是beanDefinitio 的元数据  可以存放一些自己定义的额外的描述beanDefinition 的信息*/
 	private final Map<String, Object> attributes = new LinkedHashMap<>();
 
 

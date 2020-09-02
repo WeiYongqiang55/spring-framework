@@ -16,17 +16,10 @@
 
 package org.springframework.context.annotation;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionDefaults;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
 import org.springframework.core.env.StandardEnvironment;
@@ -35,7 +28,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.PatternMatchUtils;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
+ * bean定义扫描器，其检测在类路径bean候选，与给定的注册表（登记对应bean定义BeanFactory或ApplicationContext ）。
+ * 候选类通过配置型过滤器进行检测。
+ * 默认的过滤器包括被标注了Spring的类@Component ， @Repository ， @Service或@Controller 的类会被扫描为bean 候选对象。
+ * 还支持Java EE 6的javax.annotation.ManagedBean和JSR-330的javax.inject.Named注释，如果有的话
  * A bean definition scanner that detects bean candidates on the classpath,
  * registering corresponding bean definitions with a given registry ({@code BeanFactory}
  * or {@code ApplicationContext}).
@@ -161,9 +161,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		this.registry = registry;
-
+		/**关键代码 spring 内部默认为 true*/
 		if (useDefaultFilters) {
-			registerDefaultFilters();
+			registerDefaultFilters();//默认的filter 就一个@Component 注解
 		}
 		setEnvironment(environment);
 		setResourceLoader(resourceLoader);
@@ -243,15 +243,18 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	}
 
 
-	/**
+	/**指定的基本软件包内进行扫描
 	 * Perform a scan within the specified base packages.
 	 * @param basePackages the packages to check for annotated classes
 	 * @return number of beans registered
+	 *
+	 * 这个就是做扫描包的 @ComponentScan("com.luban")处理这种注解的
 	 */
 	public int scan(String... basePackages) {
 		int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
 
 		doScan(basePackages);
+
 
 		// Register annotation config processors, if necessary.
 		if (this.includeAnnotationConfig) {
@@ -261,7 +264,8 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		return (this.registry.getBeanDefinitionCount() - beanCountAtScanStart);
 	}
 
-	/**
+	/**指定的基本软件包内进行扫描，返回注册bean definition。
+	 此方法不注册一个注解配置处理器而是让这件事给调用者
 	 * Perform a scan within the specified base packages,
 	 * returning the registered bean definitions.
 	 * <p>This method does <i>not</i> register an annotation config processor
@@ -273,7 +277,11 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		for (String basePackage : basePackages) {
+//			可能有多个包 遍历
+//			关键代码 完成扫描包
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
+
+
 			for (BeanDefinition candidate : candidates) {
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());

@@ -16,8 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.util.function.Supplier;
-
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -25,6 +23,8 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.function.Supplier;
 
 /**
  * Standalone application context, accepting <em>component classes</em> as input &mdash;
@@ -63,7 +63,16 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+
+//		AnnotatedBeanDefinitionReader 是用来做配置类的什么操作的，因为配置类是没有办法扫描到的，这里就会创建一个容器了
+		/**
+		 * 这里只需要定义一个AnnotatedBeanDefinitionReader就行了，因为这个是@Configuration()这个注解的，其他的bean 都可以通过这个类定义的扫描包去一个个扫描到的
+		 * 但是这个类自己是没有办法扫描自己的，所以要读取这个配置类，并生成一个AnnotatedBeanDefinition
+		 */
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		/**spring 提供的api,用来动态扫描注解
+		 * scaner.scan()就是扫描包的
+		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -84,9 +93,23 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		/**初始化了 scanner 和 一个 reader*/
 		this();
+//		注册register 做了什么呢
+//		this.beanDefinitionMap.put(beanName, beanDefinition);
+		/***
+		 * 注册配置类，因为配置类需要解析，一般不需要自己扫描？？
+		 *做了
+		 * this.beanDefinitionMap.put("appconfig", beanDefinition);
+		 * this.beanDefinitionMap.put(beanName, beanDefinition);
+		 */
 		register(componentClasses);
+
+
+
 		refresh();
+
+
 	}
 
 	/**
@@ -172,6 +195,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	@Override
 	public void scan(String... basePackages) {
+//		这个scanner 是在
+//		AnnotationConfigApplicationContext  ac = new AnnotationConfigApplicationContext();这个初始化的时候
+//		this.reader = new AnnotatedBeanDefinitionReader(this); 创建的
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		this.scanner.scan(basePackages);
 	}
